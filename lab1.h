@@ -17,21 +17,21 @@
 
 #define MAX_MSG_SIZE 1024
 
+//for System V API
 typedef struct {
-    int flag;      // 1 for message passing, 2 for shared memory
+    int flag;               // 1 for message passing, 2 for shared memory
     union{
-        int msqid; //for system V api. You can replace it with structure for POSIX api
-        char* shm_addr;
+        int msqid;          // for message passing(message queue) 
+        void* shm_addr;     // for share memory
     }storage;
+    int semid;              // Semaphore to control Sender's & Receiver's execution flow
 } mailbox_t;
 
-
+//Message structure for wrapper
 typedef struct {
-    /*  TODO: 
-        Message structure for wrapper
-    */
     long mType;
     char msgText[MAX_MSG_SIZE];
+    size_t last_flag;       // 0 for normal msg, 1 for last msg
 } message_t;
 
 void receive(message_t* message_ptr, mailbox_t* mailbox_ptr);
