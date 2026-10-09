@@ -24,7 +24,8 @@ typedef struct {
         int msqid;          // for message passing(message queue) 
         void* shm_addr;     // for share memory
     }storage;
-    int semid;              // Semaphore to control Sender's & Receiver's execution flow
+    sem_t* sender;          // Semaphore to control Sender's execution flow
+    sem_t* receiver;        // Semaphore to control Receiver's execution flow
 } mailbox_t;
 
 //Message structure for wrapper
