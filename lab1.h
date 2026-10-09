@@ -15,6 +15,8 @@
 #define MSG_PASSING 1
 #define SHARED_MEM 2
 
+#define KEY 0
+
 #define MAX_MSG_SIZE 1024
 
 //for System V API
@@ -32,7 +34,6 @@ typedef struct {
 typedef struct {
     long mType;
     char msgText[MAX_MSG_SIZE];
-    size_t last_flag;       // 0 for normal msg, 1 for last msg
 } message_t;
 
 void receive(message_t* message_ptr, mailbox_t* mailbox_ptr);
