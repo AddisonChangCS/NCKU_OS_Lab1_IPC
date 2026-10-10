@@ -76,6 +76,7 @@ int main(int argc, char *argv[]) {
       sem_post(mailbox.receiver);
     }
     //ending msg sending
+    sem_wait(mailbox.sender);
     strcpy(message.msgText, "EXIT");
     clock_gettime(CLOCK_MONOTONIC, &start);
     send(message, &mailbox);
@@ -104,6 +105,9 @@ int main(int argc, char *argv[]) {
     }
     //time print
     printf("Total time in receiving message: %f\n", taken_time); 
+    //semaphore cleaning
+    sem_unlink("/sender");
+    sem_unlink("/receiver");
     //mailbox cleaning
     if (mailbox.flag==SHARED_MEM)
     {
