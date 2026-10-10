@@ -15,7 +15,7 @@
 #define MSG_PASSING 1
 #define SHARED_MEM 2
 
-#define KEY 0
+#define KEY 1234
 
 #define MAX_MSG_SIZE 1024
 

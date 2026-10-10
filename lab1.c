@@ -5,11 +5,11 @@
 void receive(message_t *message_ptr, mailbox_t *mailbox_ptr) {
   if (mailbox_ptr->flag==MSG_PASSING)
   {
-    msgrcv(mailbox_ptr->storage.msqid, message_ptr, sizeof(*message_ptr)-sizeof(long), 0, 0);
+    msgrcv(mailbox_ptr->storage.msqid, message_ptr, sizeof(message_t)-sizeof(long), 0, 0);
   }
   else if (mailbox_ptr->flag==SHARED_MEM)
   {
-    memcpy(message_ptr->msgText, mailbox_ptr->storage.shm_addr, sizeof(*message_ptr));
+    memcpy(message_ptr, mailbox_ptr->storage.shm_addr, sizeof(message_t));
   }
   
 }
@@ -19,11 +19,11 @@ void receive(message_t *message_ptr, mailbox_t *mailbox_ptr) {
 void send(message_t message, mailbox_t *mailbox_ptr) {
   if (mailbox_ptr->flag==MSG_PASSING)
   {
-    msgsnd(mailbox_ptr->storage.msqid, &message, sizeof(message)-sizeof(long), 0);
+    msgsnd(mailbox_ptr->storage.msqid, &message, sizeof(message_t)-sizeof(long), 0);
   }
   else if (mailbox_ptr->flag==SHARED_MEM)
   {
-    memcpy(mailbox_ptr->storage.shm_addr, &message.msgText, sizeof(message));
+    memcpy(mailbox_ptr->storage.shm_addr, &message, sizeof(message_t));
   }
 }
 
@@ -45,12 +45,12 @@ int main(int argc, char *argv[]) {
   };
   double taken_time=0;
   struct timespec start, end;
-  int shmid;
+  int shmid=-1;
 
   //mailbox attach
   if (mailbox.flag==SHARED_MEM)
   {
-    shmid=shmget(KEY, MAX_MSG_SIZE, IPC_CREAT | 0666);
+    shmid=shmget(KEY, sizeof(message_t), IPC_CREAT | 0666);
     mailbox.storage.shm_addr=shmat(shmid, NULL, 0);
   }
   else if (mailbox.flag==MSG_PASSING)
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     taken_time+=((end.tv_sec - start.tv_sec) + (end.tv_nsec-start.tv_nsec)*1e-9);
     sem_post(mailbox.receiver);
     //time print
-    printf("Total time in sending message: %f", taken_time);    
+    printf("Total time in sending message: %f\n", taken_time);    
   }
   else if (strcmp(argv[1], "receiver")==0)
   {
@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
       sem_post(mailbox.sender);
     }
     //time print
-    printf("Total time in receiving message: %f", taken_time); 
+    printf("Total time in receiving message: %f\n", taken_time); 
     //mailbox cleaning
     if (mailbox.flag==SHARED_MEM)
     {
