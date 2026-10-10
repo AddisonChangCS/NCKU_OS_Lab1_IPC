@@ -50,11 +50,13 @@ int main(int argc, char *argv[]) {
   //mailbox attach
   if (mailbox.flag==SHARED_MEM)
   {
+    printf("Shared memory\n");
     shmid=shmget(KEY, sizeof(message_t), IPC_CREAT | 0666);
     mailbox.storage.shm_addr=shmat(shmid, NULL, 0);
   }
   else if (mailbox.flag==MSG_PASSING)
   {
+    printf("Message passing\n");
     mailbox.storage.msqid=msgget(KEY, IPC_CREAT | 0666);
   }
   
